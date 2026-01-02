@@ -1,0 +1,7 @@
+{
+  "name": "Voxmation OS - AI-Powered CRM",
+  "description": "A high-performance CRM combining the best features of Salesforce, HubSpot, and Zoho with advanced Gemini AI integration for lead generation and automated workflows.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
