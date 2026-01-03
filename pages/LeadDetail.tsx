@@ -9,10 +9,9 @@ import {
 } from '../services/geminiService.ts';
 import { 
   Phone, Mail, X, Sparkles, 
-  ShieldAlert, Save, BrainCircuit,
-  Copy, Check, Target, Zap, Loader2,
-  Languages, Edit2, User,
-  CheckCircle2, ListChecks, MessageSquareText, FileText, History, Globe, Clock, Target as TargetIcon
+  Save, BrainCircuit,
+  Target, Zap, Loader2,
+  Edit2, CheckCircle2, ListChecks, MessageSquareText, FileText, History, Clock, Target as TargetIcon
 } from 'lucide-react';
 
 export const LeadDetail: React.FC = () => {
@@ -39,7 +38,11 @@ export const LeadDetail: React.FC = () => {
         status: lead.status,
         temperature: lead.temperature,
         dnaScore: lead.dnaScore,
-        nextAction: lead.nextAction
+        nextAction: lead.nextAction,
+        niche: lead.niche,
+        mainPain: lead.mainPain,
+        urgency: lead.urgency,
+        authority: lead.authority
       });
     }
   }, [lead, isEditModalOpen]);
@@ -117,7 +120,7 @@ export const LeadDetail: React.FC = () => {
         <div className="flex items-center space-x-3">
           <div className="text-right mr-4 hidden md:block">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Next Action</p>
-            <p className="text-sm font-bold text-slate-900">{lead.nextAction}</p>
+            <p className="text-sm font-bold text-slate-900">{lead.nextAction || 'TBD'}</p>
           </div>
           <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all flex items-center space-x-2">
             <Zap size={16} />
@@ -170,7 +173,7 @@ export const LeadDetail: React.FC = () => {
                </div>
                <div className="flex items-center justify-between border-t border-slate-50 pt-4">
                   <span className="text-xs font-bold text-slate-400 uppercase">Urgency</span>
-                  <span className={`text-xs font-bold ${lead.urgency.includes('Now') ? 'text-rose-600' : 'text-slate-900'}`}>{lead.urgency}</span>
+                  <span className={`text-xs font-bold ${lead.urgency?.includes('Now') ? 'text-rose-600' : 'text-slate-900'}`}>{lead.urgency}</span>
                </div>
                <div className="pt-2">
                  <button onClick={() => setIsEditModalOpen(true)} className="w-full py-2.5 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-all">
@@ -178,21 +181,6 @@ export const LeadDetail: React.FC = () => {
                  </button>
                </div>
             </div>
-          </div>
-
-          <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 opacity-10"><TargetIcon size={80} /></div>
-             <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">Qualification Snapshot</h4>
-             <div className="space-y-4">
-                <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                   <p className="text-[10px] font-bold text-white/40 uppercase mb-1">One-line Summary</p>
-                   <p className="text-xs font-medium italic">"Lead is {lead.niche}, has {lead.mainPain} pain, wants to solve in {lead.urgency}."</p>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                   <span className="text-white/40">DNA Score</span>
-                   <span className="font-bold text-rose-400">{lead.dnaScore}/100</span>
-                </div>
-             </div>
           </div>
         </div>
 
@@ -230,52 +218,20 @@ export const LeadDetail: React.FC = () => {
                          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 relative group">
                             <button onClick={() => setIsEditModalOpen(true)} className="absolute top-4 right-4 text-slate-300 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"><Edit2 size={12} /></button>
                             <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Q1 — Niche / Segment</p>
-                            <p className="font-bold text-slate-900">{lead.niche}</p>
+                            <p className="font-bold text-slate-900">{lead.niche || '—'}</p>
                          </div>
                          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                             <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Q2 — Main Pain Point</p>
-                            <p className="font-bold text-slate-900 capitalize">{lead.mainPain}</p>
+                            <p className="font-bold text-slate-900 capitalize">{lead.mainPain || '—'}</p>
                          </div>
                          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                             <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Q3 — Urgency</p>
-                            <p className="font-bold text-slate-900">{lead.urgency}</p>
+                            <p className="font-bold text-slate-900">{lead.urgency || '—'}</p>
                          </div>
                          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                             <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Q4 — Authority</p>
-                            <p className="font-bold text-slate-900">{lead.authority}</p>
+                            <p className="font-bold text-slate-900">{lead.authority || '—'}</p>
                          </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div className="col-span-full">
-                            <h4 className="text-xs font-black text-slate-300 uppercase tracking-widest mb-4">2) Details (Account Context)</h4>
-                         </div>
-                         <div className="p-5 border border-slate-100 rounded-2xl">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Company Size</p>
-                            <p className="font-bold text-slate-900">{lead.companySize || '—'}</p>
-                         </div>
-                         <div className="p-5 border border-slate-100 rounded-2xl">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Lead Volume</p>
-                            <p className="font-bold text-slate-900">{lead.leadVolume || '—'}</p>
-                         </div>
-                         <div className="col-span-full p-5 border border-slate-100 rounded-2xl">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Current Stack</p>
-                            <div className="flex flex-wrap gap-2">
-                               {lead.currentStack?.map(s => (
-                                  <span key={s} className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-lg border border-blue-100">{s}</span>
-                               ))}
-                            </div>
-                         </div>
-                      </div>
-
-                      <div className="space-y-4">
-                         <h4 className="text-xs font-black text-slate-300 uppercase tracking-widest">3) Conversation Summary</h4>
-                         <textarea 
-                            className="w-full h-32 p-4 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-serif"
-                            placeholder="Brief context: They want [result], currently losing [X] because of [Y]..."
-                            defaultValue={lead.conversationSummary}
-                            onBlur={(e) => updateDoc({ conversationSummary: (e.target as HTMLTextAreaElement).value })}
-                         ></textarea>
                       </div>
                    </div>
                 )}
@@ -298,22 +254,101 @@ export const LeadDetail: React.FC = () => {
                             ].map((item, i) => (
                                <div key={i} className="flex items-center justify-between p-3 bg-white rounded-xl border border-emerald-100">
                                   <span className="text-sm font-medium text-slate-700">{item.label}</span>
-                                  {item.status ? <Check className="text-emerald-500" size={18} /> : <div className="h-5 w-5 rounded-full border-2 border-slate-200"></div>}
+                                  {item.status ? <CheckCircle2 className="text-emerald-500" size={18} /> : <div className="h-5 w-5 rounded-full border-2 border-slate-200"></div>}
                                </div>
                             ))}
                          </div>
                       </div>
-                      
-                      <button 
-                        disabled={lead.dnaScore < 80}
-                        className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-emerald-100"
-                      >
-                         <Zap size={20} />
-                         <span>Checklist Complete — Ready to Sell</span>
-                      </button>
                    </div>
                 )}
 
-                {activeTab === 'library' && (
+                {activeTab === 'ai' && (
                    <div className="space-y-6 animate-in slide-in-from-right-4">
-                      <
+                      <div className="flex flex-wrap gap-3 mb-8">
+                         <button onClick={handleAiNeuroDraft} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all flex items-center space-x-2">
+                            <Sparkles size={14} />
+                            <span>Neuro-Draft Email</span>
+                         </button>
+                         <button onClick={handleAiObjection} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center space-x-2">
+                            <MessageSquareText size={14} />
+                            <span>Objection Rebuttals</span>
+                         </button>
+                         <button onClick={handleAiSalesPlaybook} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center space-x-2">
+                            <TargetIcon size={14} />
+                            <span>Sales Playbook</span>
+                         </button>
+                      </div>
+
+                      <div className="bg-slate-900 rounded-3xl p-8 text-white min-h-[300px] relative overflow-hidden">
+                         <div className="absolute top-0 right-0 p-8 opacity-5"><BrainCircuit size={120} /></div>
+                         <h4 className="text-xs font-black text-blue-400 uppercase tracking-widest mb-4">{aiToolLabel}</h4>
+                         {loadingAi ? (
+                            <div className="flex flex-col items-center justify-center py-12">
+                               <Loader2 className="animate-spin text-blue-400 mb-4" size={40} />
+                               <p className="text-xs font-bold text-slate-400">Synthesizing Neural Strategy...</p>
+                            </div>
+                         ) : aiResponse ? (
+                            <div className="prose prose-invert max-w-none text-sm leading-relaxed text-slate-300">
+                               <pre className="whitespace-pre-wrap font-serif bg-transparent p-0 border-none">{aiResponse}</pre>
+                            </div>
+                         ) : (
+                            <div className="flex flex-col items-center justify-center py-12 text-center">
+                               <Sparkles size={40} className="text-slate-700 mb-4" />
+                               <p className="text-xs font-bold text-slate-500">Select a neural tool above to generate AI insights.</p>
+                            </div>
+                         )}
+                      </div>
+                   </div>
+                )}
+             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
+              <h3 className="text-xl font-bold text-slate-900">Edit Lead Record</h3>
+              <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-slate-200 rounded-xl transition-all"><X size={24}/></button>
+            </div>
+            <div className="p-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
+                <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Company</label>
+                <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.company} onChange={e => setEditForm({...editForm, company: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
+                <input type="email" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone</label>
+                <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Niche</label>
+                <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.niche} onChange={e => setEditForm({...editForm, niche: e.target.value})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Main Pain</label>
+                <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm" value={editForm.mainPain} onChange={e => setEditForm({...editForm, mainPain: e.target.value})} />
+              </div>
+            </div>
+            <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex justify-end space-x-3">
+              <button onClick={() => setIsEditModalOpen(false)} className="px-6 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all">Cancel</button>
+              <button onClick={handleSaveContact} className="px-6 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all flex items-center space-x-2">
+                 <Save size={16} />
+                 <span>Save Record</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
