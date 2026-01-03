@@ -1,7 +1,7 @@
 
 export type LeadChannel = 'WhatsApp' | 'Instagram' | 'Webchat' | 'Phone' | 'Email' | 'LinkedIn' | 'Referral';
 export type UTMMedium = 'cpc' | 'paid_social' | 'organic_social' | 'seo' | 'referral' | 'email' | 'direct' | 'affiliate' | 'partners' | 'event' | 'cold_outreach';
-export type LeadStatus = 'New' | 'Engaged' | 'Qualified' | 'Disqualified';
+export type LeadStatus = 'New' | 'Engaged' | 'Qualified' | 'Disqualified' | 'Nurture';
 export type LeadTemperature = 'Hot' | 'Warm' | 'Cold';
 
 export type OpportunityStage = 'Discovery' | 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost';
@@ -101,7 +101,6 @@ export interface Lead {
   icpFit: ICPTier;
   urgency: string;
   painPoints: string[];
-  // Added missing properties
   ownerId: string;
   firstTouchDate?: string;
   lastInteraction?: string;
@@ -138,7 +137,6 @@ export interface Opportunity {
   lossReason?: LossReason;
   createdAt: string;
   closedAt?: string;
-  // Added missing properties
   package?: string;
   forecastCloseDate?: string;
 }
@@ -164,7 +162,6 @@ export interface Account {
   currentMrr: number;
   renewalDate: string;
   expansionPotential: 'Low' | 'Med' | 'High';
-  // Added missing properties
   mrr: number;
   plan: string;
   revenue?: number;
@@ -200,7 +197,6 @@ export interface Delivery {
   blockerType?: BlockerType;
   escalationFlag: boolean;
   handoffToCsDone: boolean;
-  // Added missing properties for deployment tracking
   stage: DeliveryStatus;
   accountName: string;
   checklistProgress: number;
@@ -235,7 +231,7 @@ export interface PlaybookTemplate {
 export interface PlaybookInstance {
   id: string;
   templateId: string;
-  relatedId: string; // Account or Delivery ID
+  relatedId: string;
   ownerId: string;
   status: 'Active' | 'Completed';
   createdAt: string;

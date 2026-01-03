@@ -1,23 +1,22 @@
-
 import React from 'react';
 import { MemoryRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Layout } from './components/Layout';
-import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
-import { Leads } from './pages/Leads';
-import { LeadDetail } from './pages/LeadDetail';
-import { Accounts } from './pages/Accounts';
-import { AccountDetail } from './pages/AccountDetail';
-import { Contacts } from './pages/Contacts';
-import { Opportunities } from './pages/Opportunities';
-import { RevenueCommand } from './pages/RevenueCommand';
-import { DeliveryPage } from './pages/Delivery';
-import { DeliveryDetail } from './pages/DeliveryDetail';
-import { Support } from './pages/Support';
-import { Wiki } from './pages/Wiki';
-import { Reports } from './pages/Reports';
-import { Billing } from './pages/Billing';
-import { PlaceholderPage } from './pages/PlaceholderPage';
+import { Layout } from './components/Layout.tsx';
+import { Login } from './pages/Login.tsx';
+import { Dashboard } from './pages/Dashboard.tsx';
+import { Leads } from './pages/Leads.tsx';
+import { LeadDetail } from './pages/LeadDetail.tsx';
+import { Accounts } from './pages/Accounts.tsx';
+import { AccountDetail } from './pages/AccountDetail.tsx';
+import { Contacts } from './pages/Contacts.tsx';
+import { Opportunities } from './pages/Opportunities.tsx';
+import { RevenueCommand } from './pages/RevenueCommand.tsx';
+import { DeliveryPage } from './pages/Delivery.tsx';
+import { DeliveryDetail } from './pages/DeliveryDetail.tsx';
+import { Support } from './pages/Support.tsx';
+import { Wiki } from './pages/Wiki.tsx';
+import { Reports } from './pages/Reports.tsx';
+import { Billing } from './pages/Billing.tsx';
+import { PlaceholderPage } from './pages/PlaceholderPage.tsx';
 
 const App: React.FC = () => {
   return (
