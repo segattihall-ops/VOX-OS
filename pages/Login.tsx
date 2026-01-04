@@ -11,10 +11,10 @@ export const Login: React.FC = () => {
   const handleLogin = () => {
     login({
       id: 'usr-1',
-      name: 'John Doe',
-      email: 'john@voxmation.io',
+      name: 'BRUno',
+      email: 'bruno@voxmation.io',
       role: 'System Administrator',
-      initials: 'JD'
+      initials: 'B'
     });
     navigate('/dashboard');
   };
