@@ -6,7 +6,7 @@ import {
   generateLeadInsights, 
   generateObjectionHandling, 
   generateSalesInsights 
-} from '../services/geminiService.ts';
+} from '../services/groqService.ts';
 import { 
   Phone, Mail, X, Sparkles, 
   Save, BrainCircuit,

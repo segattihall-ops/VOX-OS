@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { scanNewLeads } from '../services/geminiService';
+import { scanNewLeads } from '../services/groqService'; // ← UPDATED TO GROQ
 import { Zap, Search, Radar, ListFilter, Target, Rocket, Sparkles, AlertCircle } from 'lucide-react';
 
 export const RevenueCommand: React.FC = () => {
@@ -11,10 +10,16 @@ export const RevenueCommand: React.FC = () => {
 
   const handleScan = async () => {
     setScanning(true);
-    const leads = await scanNewLeads(industry);
-    setResults(leads);
-    setScanning(false);
-    setActiveTab('ledger');
+    try {
+      const leads = await scanNewLeads(industry);
+      setResults(leads);
+      setActiveTab('ledger');
+    } catch (error) {
+      console.error("Scan failed:", error);
+      setResults([]);
+    } finally {
+      setScanning(false);
+    }
   };
 
   return (
@@ -28,7 +33,7 @@ export const RevenueCommand: React.FC = () => {
           </div>
           <h2 className="text-4xl font-bold mb-4 tracking-tight">Revenue Command</h2>
           <p className="text-slate-400 text-lg">
-            Scan the market for high-intent signals and identify your next enterprise accounts using Voxmation's proprietary Gemini-powered engine.
+            Scan the market for high-intent signals and identify your next enterprise accounts using Voxmation's neural engine.
           </p>
         </div>
       </div>
@@ -83,7 +88,7 @@ export const RevenueCommand: React.FC = () => {
                   <button 
                     onClick={handleScan}
                     disabled={scanning}
-                    className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all flex items-center justify-center space-x-2"
+                    className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all flex items-center justify-center space-x-2 disabled:opacity-70"
                   >
                     {scanning ? (
                       <>
@@ -99,7 +104,7 @@ export const RevenueCommand: React.FC = () => {
                   </button>
                 </div>
                 <div className="flex items-center justify-center space-x-4 text-xs text-slate-400 uppercase tracking-widest font-bold">
-                  <span>Powered by Gemini 3</span>
+                  <span>Powered by Llama 3.1 70B</span>
                   <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
                   <span>Real-time Signal Analysis</span>
                 </div>
@@ -111,7 +116,9 @@ export const RevenueCommand: React.FC = () => {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in slide-in-from-right-4 duration-300">
               <div className="p-6 border-b border-slate-200 flex justify-between items-center">
                 <h3 className="font-bold text-slate-900 text-lg">AI Generated Leads</h3>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase">{results.length} Signals Detected</span>
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase">
+                  {results.length} Signals Detected
+                </span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -125,31 +132,38 @@ export const RevenueCommand: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {results.length > 0 ? results.map((item, i) => (
-                      <tr key={i} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4 font-bold text-slate-900">{item.company}</td>
-                        <td className="px-6 py-4 text-slate-600">{item.contact}</td>
-                        <td className="px-6 py-4">
-                          <span className="flex items-center text-xs text-slate-500 italic max-w-xs leading-relaxed">
-                            <Sparkles size={12} className="mr-2 text-blue-500 flex-shrink-0" />
-                            {item.signal}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center">
-                            <span className={`font-mono font-bold text-sm ${item.dnaScore > 80 ? 'text-emerald-600' : 'text-slate-600'}`}>
-                              {item.dnaScore}
+                    {results.length > 0 ? (
+                      results.map((item, i) => (
+                        <tr key={i} className="hover:bg-slate-50 transition-colors">
+                          <td className="px-6 py-4 font-bold text-slate-900">{item.company}</td>
+                          <td className="px-6 py-4 text-slate-600">{item.contact}</td>
+                          <td className="px-6 py-4">
+                            <span className="flex items-center text-xs text-slate-500 italic max-w-xs leading-relaxed">
+                              <Sparkles size={12} className="mr-2 text-blue-500 flex-shrink-0" />
+                              {item.signal}
                             </span>
-                            <div className="ml-2 w-16 h-1 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                              <div className="h-full bg-blue-500" style={{ width: `${item.dnaScore}%` }}></div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <span className={`font-mono font-bold text-sm ${item.dnaScore > 80 ? 'text-emerald-600' : 'text-slate-600'}`}>
+                                {item.dnaScore}
+                              </span>
+                              <div className="ml-2 w-16 h-1 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                                <div 
+                                  className="h-full bg-blue-500 transition-all duration-500" 
+                                  style={{ width: `${item.dnaScore}%` }}
+                                ></div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button className="text-blue-600 font-bold text-sm hover:underline">Import</button>
-                        </td>
-                      </tr>
-                    )) : (
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button className="text-blue-600 font-bold text-sm hover:underline">
+                              Import
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
                       <tr>
                         <td colSpan={5} className="px-6 py-20 text-center">
                           <div className="max-w-xs mx-auto space-y-3">
@@ -170,9 +184,13 @@ export const RevenueCommand: React.FC = () => {
               <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
                 <Target size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">AI Inspector Placeholder</h3>
-              <p className="text-slate-500 max-w-sm mx-auto">Upload a list of domains to perform deep firmographic analysis and uncover hidden technical pain points.</p>
-              <button className="mt-4 px-6 py-3 bg-white border border-slate-200 rounded-lg font-bold text-slate-600 hover:bg-slate-50">Upload Domain List</button>
+              <h3 className="text-xl font-bold text-slate-900">AI Inspector</h3>
+              <p className="text-slate-500 max-w-sm mx-auto">
+                Upload a list of domains to perform deep firmographic analysis and uncover hidden technical pain points.
+              </p>
+              <button className="mt-4 px-6 py-3 bg-white border border-slate-200 rounded-lg font-bold text-slate-600 hover:bg-slate-50">
+                Upload Domain List
+              </button>
             </div>
           )}
         </div>

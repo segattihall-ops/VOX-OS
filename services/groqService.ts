@@ -1,20 +1,23 @@
 import { Groq } from "groq-sdk";
 import { Lead, Opportunity } from "./types.ts";
 
-// Vite-exposed environment variable (must be prefixed with VITE_)
+// Vite-exposed environment variable
 const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
 if (!apiKey) {
   console.warn("VITE_GROQ_API_KEY not set – AI features will use fallback responses.");
 }
 
-const groq = new Groq({ apiKey });
+// IMPORTANT: Allow browser usage (safe for development only!)
+const groq = new Groq({ 
+  apiKey,
+  dangerouslyAllowBrowser: true  // ← This fixes the crash
+});
 
-const CURRENT_MODEL = "llama-3.3-70b-versatile"; // ← Confirmed working model
+const CURRENT_MODEL = "llama-3.3-70b-versatile"; // Confirmed working
 
-/**
- * Analyze deal closing probability.
- */
+// ... rest of your functions remain exactly the same ...
+
 export const analyzeOpportunityProbability = async (opp: Opportunity, lead?: Lead) => {
   try {
     const prompt = `Analyze closing probability for Deal: ${opp.name}, Stage: ${opp.stage}, Amount: $${opp.amount}. Lead context: ${lead?.niche || 'N/A'}, Main Pain: ${lead?.mainPain || 'N/A'}. Return ONLY valid JSON: {"probability": number, "reasoning": string, "recommendation": string}.`;
@@ -41,9 +44,9 @@ export const analyzeOpportunityProbability = async (opp: Opportunity, lead?: Lea
   }
 };
 
-/**
- * Generate personalized high-conversion outreach email.
- */
+// Keep all other functions exactly as in the previous version (generateLeadInsights, generateAutomatedFollowUp, scanNewLeads, etc.)
+// Just make sure they all use CURRENT_MODEL
+
 export const generateLeadInsights = async (leadName: string, company: string, painPoints: string[]) => {
   try {
     const response = await groq.chat.completions.create({
@@ -69,9 +72,8 @@ export const generateLeadInsights = async (leadName: string, company: string, pa
   }
 };
 
-/**
- * Generate short re-engagement message.
- */
+// ... include all other functions from previous version with CURRENT_MODEL ...
+
 export const generateAutomatedFollowUp = async (
   leadName: string,
   company: string,
@@ -99,9 +101,6 @@ export const generateAutomatedFollowUp = async (
   }
 };
 
-/**
- * Simulate scanning for new high-value leads.
- */
 export const scanNewLeads = async (industry: string) => {
   try {
     const response = await groq.chat.completions.create({
@@ -109,7 +108,7 @@ export const scanNewLeads = async (industry: string) => {
       messages: [
         {
           role: "user",
-          content: `Return ONLY a valid JSON array of 5 hypothetical but realistic high-value enterprise leads in the ${industry} sector. Each object must have: "company" (string), "contact" (string), "signal" (string, e.g. recent funding, hiring spree), "dnaScore" (number 0-100). No extra text.`,
+          content: `Return ONLY a valid JSON array of 5 hypothetical but realistic high-value enterprise leads in the ${industry} sector. Each object must have: "company", "contact", "signal", "dnaScore" (0-100). No extra text.`,
         },
       ],
       response_format: { type: "json_object" },
@@ -141,9 +140,6 @@ export const scanNewLeads = async (industry: string) => {
   }
 };
 
-/**
- * Generate likely objections + handling.
- */
 export const generateObjectionHandling = async (leadName: string, company: string, painPoints: string[]) => {
   try {
     const response = await groq.chat.completions.create({
@@ -165,9 +161,6 @@ export const generateObjectionHandling = async (leadName: string, company: strin
   }
 };
 
-/**
- * 12-month strategic growth roadmap.
- */
 export const generateSalesInsights = async (leadName: string, company: string, painPoints: string[]) => {
   try {
     const response = await groq.chat.completions.create({

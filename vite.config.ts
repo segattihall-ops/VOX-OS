@@ -1,23 +1,28 @@
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-      },
-      plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    };
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+
+  server: {
+    port: 3000,
+    host: '0.0.0.0', // Allows access from Codespaces preview / network
+    // Optional: Helps fix HMR WebSocket issues in Codespaces
+    hmr: {
+      clientPort: 443, // Use HTTPS port for WebSocket (common Codespaces fix)
+    },
+  },
+
+  resolve: {
+    alias: {
+      // Standard convention: @ → src folder
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+
+  // No need to define process.env here anymore!
+  // We use import.meta.env.VITE_GROQ_API_KEY directly in code
+  // (Vite automatically exposes variables prefixed with VITE_)
 });
