@@ -173,6 +173,7 @@ export const MOCK_DELIVERIES: Delivery[] = [
 
 export const NAV_ITEMS = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+  { label: 'Activities', icon: <Calendar size={20} />, path: '/dashboard/activities' },
   { label: 'Leads', icon: <Users size={20} />, path: '/dashboard/leads' },
   { label: 'Accounts', icon: <Building2 size={20} />, path: '/dashboard/accounts' },
   { label: 'Contacts', icon: <Users size={20} />, path: '/dashboard/contacts' },

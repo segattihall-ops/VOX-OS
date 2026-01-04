@@ -16,7 +16,8 @@ import { Support } from './pages/Support.tsx';
 import { Wiki } from './pages/Wiki.tsx';
 import { Reports } from './pages/Reports.tsx';
 import { Billing } from './pages/Billing.tsx';
-import { PlaceholderPage } from './pages/PlaceholderPage.tsx';
+import { Activities } from './pages/Activities.tsx';
+import { SupportTicketDetail } from './pages/SupportTicketDetail.tsx';
 
 const App: React.FC = () => {
   return (
@@ -39,8 +40,8 @@ const App: React.FC = () => {
         <Route path="/dashboard/billing" element={<Layout><Billing /></Layout>} />
         <Route path="/dashboard/support" element={<Layout><Support /></Layout>} />
         
-        <Route path="/dashboard/activities" element={<Layout><PlaceholderPage title="Activities" /></Layout>} />
-        <Route path="/dashboard/support/:ticketId" element={<Layout><PlaceholderPage title="Ticket Detail" /></Layout>} />
+        <Route path="/dashboard/activities" element={<Layout><Activities /></Layout>} />
+        <Route path="/dashboard/support/:ticketId" element={<Layout><SupportTicketDetail /></Layout>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
