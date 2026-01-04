@@ -14,7 +14,7 @@ export const Login: React.FC = () => {
       name: 'BRUno',
       email: 'bruno@voxmation.io',
       role: 'System Administrator',
-      initials: 'B'
+      initials: 'BR'
     });
     navigate('/dashboard');
   };
