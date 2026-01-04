@@ -14,7 +14,6 @@ import { DeliveryPage } from './pages/Delivery.tsx';
 import { DeliveryDetail } from './pages/DeliveryDetail.tsx';
 import { Support } from './pages/Support.tsx';
 import { SupportDetail } from './pages/SupportDetail.tsx';
-import { Activities } from './pages/Activities.tsx';
 import { Wiki } from './pages/Wiki.tsx';
 import { Reports } from './pages/Reports.tsx';
 import { Billing } from './pages/Billing.tsx';
