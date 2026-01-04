@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLiveCollection } from '../hooks/useLiveData'; // ← Removed useAddDoc
-import { Lead } from '../types';
+import { useLiveCollection } from '../hooks/useLiveData';
+import { Lead, LeadChannel, LeadStatus, LeadTemperature } from '../types';
 import { generateAutomatedFollowUp } from '../services/groqService';
 import { 
   Plus, Search, X, Sparkles, 
-  Loader2, BrainCircuit 
+  Loader2, BrainCircuit, Send, Check 
 } from 'lucide-react';
 
 export const Leads: React.FC = () => {
@@ -13,8 +13,20 @@ export const Leads: React.FC = () => {
   const [activeFollowUp, setActiveFollowUp] = useState<Lead | null>(null);
   const [followUpDraft, setFollowUpDraft] = useState('');
   const [loadingAI, setLoadingAI] = useState(false);
+  const [showNewLead, setShowNewLead] = useState(false);
+  const [newLead, setNewLead] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    channel: 'Email' as LeadChannel,
+    temperature: 'Warm' as LeadTemperature,
+    status: 'New' as LeadStatus,
+    source: 'Inbound'
+  });
+  const [painPointInput, setPainPointInput] = useState('');
 
-  const { data: leads = [] } = useLiveCollection<Lead>('leads');
+  const { data: leads = [], addDoc } = useLiveCollection<Lead>('leads');
   const navigate = useNavigate();
 
   const stats = useMemo(() => {
@@ -49,6 +61,50 @@ export const Leads: React.FC = () => {
     l.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const resetNewLead = () => {
+    setNewLead({
+      name: '',
+      company: '',
+      email: '',
+      phone: '',
+      channel: 'Email',
+      temperature: 'Warm',
+      status: 'New',
+      source: 'Inbound'
+    });
+    setPainPointInput('');
+  };
+
+  const handleCreateLead = async () => {
+    if (!newLead.name.trim()) return;
+    const now = new Date().toISOString();
+    const painPoints = painPointInput
+      .split(',')
+      .map(point => point.trim())
+      .filter(Boolean);
+
+    await addDoc({
+      name: newLead.name.trim(),
+      company: newLead.company.trim() || undefined,
+      email: newLead.email.trim() || undefined,
+      phone: newLead.phone.trim() || undefined,
+      source: newLead.source,
+      channel: newLead.channel,
+      status: newLead.status,
+      temperature: newLead.temperature,
+      createdAt: now,
+      dnaScore: Math.floor(60 + Math.random() * 35),
+      icpFit: 'B',
+      urgency: 'Normal',
+      painPoints,
+      ownerId: 'you',
+      lastInteraction: now,
+      notes: ''
+    });
+    setShowNewLead(false);
+    resetNewLead();
+  };
+
   return (
     <div className="space-y-6 animate-in">
       {/* Header */}
@@ -62,11 +118,9 @@ export const Leads: React.FC = () => {
             AI is currently scoring {leads.length} active prospects.
           </p>
         </div>
-        {/* "New Prospect" button — temporarily disabled until add hook is ready */}
         <button 
-          onClick={() => alert("Add new lead coming soon!")}
-          className="bg-blue-600 text-white px-8 py-4 rounded-[1.25rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 flex items-center gap-2 active:scale-95 transition-all opacity-70 cursor-not-allowed"
-          disabled
+          onClick={() => setShowNewLead(true)}
+          className="bg-blue-600 text-white px-8 py-4 rounded-[1.25rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 flex items-center gap-2 active:scale-95 transition-all hover:bg-blue-500"
         >
           <Plus size={18} />
           <span>New Prospect</span>
@@ -242,6 +296,144 @@ export const Leads: React.FC = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNewLead && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in">
+            <div className="p-10 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+              <div className="flex items-center gap-6">
+                <div className="p-4 bg-blue-600 text-white rounded-[1.25rem] shadow-lg">
+                  <Plus size={28} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900">Create Prospect</h3>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                    Capture new lead details
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowNewLead(false);
+                  resetNewLead();
+                }} 
+                className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <X size={28}/>
+              </button>
+            </div>
+            <div className="p-10 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Full Name
+                  <input 
+                    type="text"
+                    value={newLead.name}
+                    onChange={e => setNewLead({ ...newLead, name: e.target.value })}
+                    placeholder="Lead name"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Company
+                  <input 
+                    type="text"
+                    value={newLead.company}
+                    onChange={e => setNewLead({ ...newLead, company: e.target.value })}
+                    placeholder="Company or brand"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Email
+                  <input 
+                    type="email"
+                    value={newLead.email}
+                    onChange={e => setNewLead({ ...newLead, email: e.target.value })}
+                    placeholder="email@company.com"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Phone
+                  <input 
+                    type="tel"
+                    value={newLead.phone}
+                    onChange={e => setNewLead({ ...newLead, phone: e.target.value })}
+                    placeholder="+1 555 0100"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Channel
+                  <select
+                    value={newLead.channel}
+                    onChange={e => setNewLead({ ...newLead, channel: e.target.value as LeadChannel })}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="Email">Email</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Phone">Phone</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Webchat">Webchat</option>
+                    <option value="Referral">Referral</option>
+                  </select>
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Temperature
+                  <select
+                    value={newLead.temperature}
+                    onChange={e => setNewLead({ ...newLead, temperature: e.target.value as LeadTemperature })}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="Hot">Hot</option>
+                    <option value="Warm">Warm</option>
+                    <option value="Cold">Cold</option>
+                  </select>
+                </label>
+                <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400">
+                  Status
+                  <select
+                    value={newLead.status}
+                    onChange={e => setNewLead({ ...newLead, status: e.target.value as LeadStatus })}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="New">New</option>
+                    <option value="Engaged">Engaged</option>
+                    <option value="Qualified">Qualified</option>
+                    <option value="Nurture">Nurture</option>
+                    <option value="Disqualified">Disqualified</option>
+                  </select>
+                </label>
+              </div>
+              <label className="space-y-2 text-xs font-black uppercase tracking-widest text-slate-400 block">
+                Pain Points (comma separated)
+                <input 
+                  type="text"
+                  value={painPointInput}
+                  onChange={e => setPainPointInput(e.target.value)}
+                  placeholder="Hiring, onboarding, lead follow-up"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </label>
+              <div className="flex justify-between items-center pt-4">
+                <p className="text-xs text-slate-400 font-semibold">
+                  We will auto-generate the neural score and ownership metadata.
+                </p>
+                <button 
+                  onClick={handleCreateLead}
+                  disabled={!newLead.name.trim()}
+                  className="inline-flex items-center gap-3 px-6 py-4 bg-blue-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-blue-500 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Check size={18} />
+                  Create Prospect
+                </button>
+              </div>
             </div>
           </div>
         </div>
